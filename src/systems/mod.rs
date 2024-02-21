@@ -1,0 +1,79 @@
+use crate::prelude::*;
+
+mod chasing;
+mod combat;
+mod end_turn;
+mod entity_render;
+mod fov;
+mod hud;
+mod map_render;
+mod movement;
+mod player_input;
+mod random_move;
+mod tooltips;
+mod use_items;
+mod skills;
+mod experience;
+
+pub fn build_input_scheduler() -> Schedule {
+    Schedule::builder()
+        .add_system(player_input::player_input_system())
+        .add_system(fov::fov_system())
+        .flush()
+        .add_system(map_render::map_render_system())
+        .add_system(entity_render::entity_render_system())
+        .add_system(hud::hud_system())
+        .add_system(tooltips::tooltips_system())
+        .add_system(experience::add_experience_system())
+        .build()
+}
+
+pub fn build_player_scheduler() -> Schedule {
+    Schedule::builder()
+        .add_system(movement::movement_system())
+        .flush()
+        .add_system(use_items::use_items_system())
+        .add_system(skills::use_skills_system())
+        .add_system(combat::combat_system())
+        .flush()
+        .add_system(fov::fov_system())
+        .flush()
+        .add_system(map_render::map_render_system())
+        .add_system(entity_render::entity_render_system())
+        .add_system(hud::hud_system())
+        .add_system(end_turn::end_turn_system())
+        .build()
+}
+
+pub fn build_enemy_scheduler() -> Schedule {
+    Schedule::builder()
+        .add_system(chasing::chasing_system())
+        .flush()
+        .add_system(movement::movement_system())
+        .flush()
+        .add_system(use_items::use_items_system())
+        .add_system(combat::combat_system())
+        .flush()
+        .add_system(random_move::random_move_system())
+        .flush()
+        .add_system(fov::fov_system())
+        .flush()
+        .add_system(map_render::map_render_system())
+        .add_system(entity_render::entity_render_system())
+        .add_system(hud::hud_system())
+        .add_system(end_turn::end_turn_system())
+        .build()
+}
+
+pub fn build_world_scheduler() -> Schedule {
+    Schedule::builder()
+        .add_system(experience::add_experience_system())
+        .add_system(skills::reduce_skill_cooldowns_system())
+        .flush()        
+        .add_system(map_render::map_render_system())
+        .add_system(entity_render::entity_render_system())
+        .add_system(hud::hud_system())
+        .add_system(end_turn::end_turn_system())
+        .flush()
+        .build()
+}
